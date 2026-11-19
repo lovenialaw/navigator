@@ -1,0 +1,262 @@
+{
+  "version": "2026.11-kv-starter",
+  "currency": "MYR",
+  "vehicleClass": 1,
+  "placeholder": true,
+  "disclaimer": "PLACEHOLDER rates for development. Not official concessionaire tariffs. Always show toll totals to drivers as estimates.",
+  "description": "Class 1 (Passenger Cars - 2 axles, 3/4 wheels excluding taxis) toll rates for major Klang Valley highways plus a PLUS closed-system starter table.",
+  "highways": [
+    {
+      "highwayCode": "E11",
+      "shortName": "LDP",
+      "fullName": "Lebuhraya Damansara-Puchong",
+      "operator": "LITRAK (ALR)",
+      "systemType": "OPEN",
+      "plazas": [
+        {
+          "plazaCode": "LDP-PEN",
+          "name": "Penchala Toll Plaza",
+          "kmMarker": 11.4,
+          "lat": 3.1636,
+          "lng": 101.6128,
+          "rateClass1": 2.10,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "LDP-PJS",
+          "name": "Petaling Jaya Selatan Toll Plaza",
+          "kmMarker": 19.8,
+          "lat": 3.0853,
+          "lng": 101.6139,
+          "rateClass1": 2.10,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "LDP-PCB",
+          "name": "Puchong Barat Toll Plaza",
+          "kmMarker": 26.5,
+          "lat": 3.0472,
+          "lng": 101.6085,
+          "rateClass1": 2.10,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "LDP-PCS",
+          "name": "Puchong Selatan Toll Plaza",
+          "kmMarker": 32.1,
+          "lat": 2.9994,
+          "lng": 101.6214,
+          "rateClass1": 2.10,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        }
+      ]
+    },
+    {
+      "highwayCode": "E5",
+      "shortName": "KESAS",
+      "fullName": "Shah Alam Expressway",
+      "operator": "KESAS Sdn Bhd (ALR)",
+      "systemType": "OPEN",
+      "plazas": [
+        {
+          "plazaCode": "KESAS-KMN",
+          "name": "Kemuning Toll Plaza",
+          "kmMarker": 27.2,
+          "lat": 2.9973,
+          "lng": 101.5221,
+          "rateClass1": 2.00,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "KESAS-SWY",
+          "name": "Sunway Toll Plaza",
+          "kmMarker": 40.5,
+          "lat": 3.0587,
+          "lng": 101.6083,
+          "rateClass1": 2.00,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "KESAS-ABE",
+          "name": "Awan Besar East Toll Plaza",
+          "kmMarker": 47.5,
+          "lat": 3.0587,
+          "lng": 101.6649,
+          "rateClass1": 2.00,
+          "chargeDirection": { "bearingDeg": 90, "toleranceDeg": 75 },
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "KESAS-ABW",
+          "name": "Awan Besar West Toll Plaza",
+          "kmMarker": 49.2,
+          "lat": 3.0636,
+          "lng": 101.6793,
+          "rateClass1": 2.00,
+          "chargeDirection": { "bearingDeg": 270, "toleranceDeg": 75 },
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        }
+      ]
+    },
+    {
+      "highwayCode": "E20",
+      "shortName": "MEX",
+      "fullName": "Maju Expressway",
+      "operator": "Maju Expressway Sdn Bhd",
+      "systemType": "OPEN",
+      "plazas": [
+        {
+          "plazaCode": "MEX-SLK",
+          "name": "Salak Selatan Toll Plaza",
+          "kmMarker": 3.2,
+          "lat": 3.0956,
+          "lng": 101.7031,
+          "rateClass1": 2.00,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "MEX-SKB",
+          "name": "Seri Kembangan Toll Plaza",
+          "kmMarker": 14.5,
+          "lat": 3.0185,
+          "lng": 101.6897,
+          "rateClass1": 2.20,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "MEX-PTJ",
+          "name": "Putrajaya Utama Toll Plaza",
+          "kmMarker": 23.8,
+          "lat": 2.9461,
+          "lng": 101.6642,
+          "rateClass1": 3.50,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        }
+      ]
+    },
+    {
+      "highwayCode": "E33",
+      "shortName": "DUKE",
+      "fullName": "Duta-Ulu Kelang Expressway",
+      "operator": "KESTURI (Ekovest)",
+      "systemType": "OPEN",
+      "plazas": [
+        {
+          "plazaCode": "DUKE-BTU",
+          "name": "Batu Toll Plaza",
+          "kmMarker": 4.1,
+          "lat": 3.2044,
+          "lng": 101.6828,
+          "rateClass1": 2.50,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "DUKE-STP",
+          "name": "Sentul Pasar Toll Plaza",
+          "kmMarker": 6.8,
+          "lat": 3.1965,
+          "lng": 101.6992,
+          "rateClass1": 2.50,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "DUKE-AYP",
+          "name": "Ayer Panas Toll Plaza",
+          "kmMarker": 9.5,
+          "lat": 3.1872,
+          "lng": 101.7204,
+          "rateClass1": 2.50,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        },
+        {
+          "plazaCode": "DUKE-SGB",
+          "name": "Segambut Toll Plaza (DUKE 2)",
+          "kmMarker": 13.2,
+          "lat": 3.1869,
+          "lng": 101.6584,
+          "rateClass1": 2.50,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        }
+      ]
+    },
+    {
+      "highwayCode": "E12",
+      "shortName": "AKLEH",
+      "fullName": "Ampang-Kuala Lumpur Elevated Highway",
+      "operator": "PROLINTAS",
+      "systemType": "OPEN",
+      "plazas": [
+        {
+          "plazaCode": "AKLEH-JDK",
+          "name": "Jalan Datuk Keramat Toll Plaza",
+          "kmMarker": 4.0,
+          "lat": 3.1642,
+          "lng": 101.7317,
+          "rateClass1": 2.13,
+          "paymentMethods": ["TNG", "RFID", "OPEN_PAYMENT"]
+        }
+      ]
+    },
+    {
+      "highwayCode": "E1",
+      "shortName": "PLUS",
+      "fullName": "North-South Expressway",
+      "operator": "PLUS Malaysia Berhad",
+      "systemType": "CLOSED",
+      "plazas": [
+        {
+          "plazaCode": "PLUS-RWG",
+          "name": "Rawang Interchange",
+          "kmMarker": 0,
+          "lat": 3.319,
+          "lng": 101.574,
+          "paymentMethods": ["TNG", "RFID"]
+        },
+        {
+          "plazaCode": "PLUS-SBL",
+          "name": "Sungai Buloh Interchange",
+          "kmMarker": 14,
+          "lat": 3.205,
+          "lng": 101.581,
+          "paymentMethods": ["TNG", "RFID"]
+        },
+        {
+          "plazaCode": "PLUS-DUT",
+          "name": "Jalan Duta Interchange",
+          "kmMarker": 26,
+          "lat": 3.175,
+          "lng": 101.67,
+          "paymentMethods": ["TNG", "RFID"]
+        },
+        {
+          "plazaCode": "PLUS-NIL",
+          "name": "Nilai Interchange",
+          "kmMarker": 84,
+          "lat": 2.815,
+          "lng": 101.796,
+          "paymentMethods": ["TNG", "RFID"]
+        },
+        {
+          "plazaCode": "PLUS-SRB",
+          "name": "Seremban Interchange",
+          "kmMarker": 112,
+          "lat": 2.7266,
+          "lng": 101.937,
+          "paymentMethods": ["TNG", "RFID"]
+        }
+      ],
+      "rates": [
+        { "from": "PLUS-RWG", "to": "PLUS-SBL", "rateClass1": 2.50 },
+        { "from": "PLUS-RWG", "to": "PLUS-DUT", "rateClass1": 4.10 },
+        { "from": "PLUS-RWG", "to": "PLUS-NIL", "rateClass1": 9.90 },
+        { "from": "PLUS-RWG", "to": "PLUS-SRB", "rateClass1": 13.20 },
+        { "from": "PLUS-SBL", "to": "PLUS-DUT", "rateClass1": 1.90 },
+        { "from": "PLUS-SBL", "to": "PLUS-NIL", "rateClass1": 7.80 },
+        { "from": "PLUS-SBL", "to": "PLUS-SRB", "rateClass1": 11.10 },
+        { "from": "PLUS-DUT", "to": "PLUS-NIL", "rateClass1": 6.20 },
+        { "from": "PLUS-DUT", "to": "PLUS-SRB", "rateClass1": 9.50 },
+        { "from": "PLUS-NIL", "to": "PLUS-SRB", "rateClass1": 3.30 }
+      ]
+    }
+  ]
+}
