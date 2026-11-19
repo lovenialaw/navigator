@@ -2,9 +2,17 @@
  * TUJU runtime configuration. This is the ONLY module that knows about the map
  * style URL and the regional .pmtiles pack URLs.
  *
- * The real endpoints are not decided yet, so every URL below is a placeholder on
- * the reserved `.invalid` TLD. Placeholders never hit the network: the app falls
- * back to a bundled offline style and the pack drawer shows "URL not configured".
+ * Map style, routing and search default to free, no-API-key PUBLIC servers
+ * (OpenFreeMap, FOSSGIS Valhalla, Komoot Photon). They are fine for development and
+ * light testing, NOT for production traffic: swap in self-hosted URLs via the env vars
+ * below before launch. Every Valhalla response is cached in MMKV to stay within
+ * their fair-use limits. The regional .pmtiles pack URLs are still placeholders on the
+ * reserved `.invalid` TLD, which never touches the network: the pack drawer shows
+ * "URL not configured" until you host them.
+ *
+ * Demo mode: point the Valhalla or Photon URL at a `.invalid` host (see
+ * DEMO_VALHALLA_BASE_URL / DEMO_PHOTON_BASE_URL) and that service serves built-in
+ * sample data with zero network traffic.
  *
  * Override without editing code by setting Expo public env vars (in `.env`, in the
  * shell before `expo start`, or in EAS build profiles):
@@ -12,6 +20,10 @@
  *   EXPO_PUBLIC_TUJU_STYLE_URL        full MapLibre style JSON URL (malaysia.pmtiles style)
  *   EXPO_PUBLIC_TUJU_STYLE_SOURCE_ID  id of the vector source in that style that offline packs replace
  *   EXPO_PUBLIC_TUJU_PACK_BASE_URL    directory URL that hosts <pack>.pmtiles files
+ *   EXPO_PUBLIC_TUJU_VALHALLA_URL     base URL of the Valhalla server (we call <base>/route)
+ *   EXPO_PUBLIC_TUJU_PHOTON_URL       base URL of the Photon geocoder (we call <base>/api)
+ *   EXPO_PUBLIC_TUJU_OVERPASS_URL     Overpass interpreter URL for R&R / petrol / EV POIs
+ *   EXPO_PUBLIC_TUJU_ALERTS_URL       JSON feed of flood / landslide alerts (unset = no feed)
  *   EXPO_PUBLIC_TUJU_PACK_URL_<ID>    full URL for one pack, wins over the base URL.
  *                                     <ID> = KLANG_VALLEY | PAHANG_EAST_COAST | SABAH | SARAWAK
  *
@@ -21,9 +33,30 @@ import { z } from 'zod';
 
 export const PLACEHOLDER_HOST_SUFFIX = '.invalid';
 
-export const DEFAULT_STYLE_URL = 'https://tiles.tuju.invalid/styles/malaysia/style.json';
+/** OpenFreeMap "Liberty" vector style. Free, no key. */
+export const DEFAULT_STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
 export const DEFAULT_PACK_BASE_URL = 'https://tiles.tuju.invalid/packs';
-export const DEFAULT_STYLE_SOURCE_ID = 'malaysia';
+/** Vector source id in the Liberty style (OpenMapTiles schema). */
+export const DEFAULT_STYLE_SOURCE_ID = 'openmaptiles';
+/** FOSSGIS public Valhalla. We call `<base>/route`. */
+export const DEFAULT_VALHALLA_BASE_URL = 'https://valhalla1.openstreetmap.de';
+/** Komoot public Photon. We call `<base>/api`; a trailing `/api` on the setting is accepted and removed. */
+export const DEFAULT_PHOTON_BASE_URL = 'https://photon.komoot.io';
+
+/**
+ * Public Overpass API, queried once per route for R&R, petrol and EV POIs (then cached
+ * in MMKV). Development only; self-host or use a paid mirror before launch.
+ */
+export const DEFAULT_OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+/** Demo host: serves clearly labelled sample POIs placed along the route, no network. */
+export const DEMO_OVERPASS_URL = 'https://overpass.tuju.invalid/api/interpreter';
+
+/** `.invalid` hosts that switch the routing / search service to built-in sample data. */
+export const DEMO_VALHALLA_BASE_URL = 'https://valhalla.tuju.invalid';
+export const DEMO_PHOTON_BASE_URL = 'https://photon.tuju.invalid';
+
+/** Photon results are always biased toward this point (Sunway, Klang Valley): `&lat=3.0733&lon=101.6067`. */
+export const PHOTON_BIAS = { lat: 3.0733, lng: 101.6067 } as const;
 
 const httpUrl = z
   .string()
@@ -49,6 +82,14 @@ export type PackDefinition = z.infer<typeof packDefinitionSchema>;
 export const tujuConfigSchema = z.object({
   styleUrl: httpUrl,
   styleSourceId: z.string().min(1),
+  valhallaBaseUrl: httpUrl,
+  photonBaseUrl: httpUrl,
+  overpassUrl: httpUrl,
+  /**
+   * JSON feed of active flood / landslide alerts (see src/alerts). No public JPS or LLM
+   * feed has been verified, so this is unset by default and the Alerts tab says so.
+   */
+  alertsUrl: httpUrl.nullable(),
   packs: z
     .array(packDefinitionSchema)
     .min(1)
@@ -118,6 +159,10 @@ export function readExpoPublicEnv(): TujuEnv {
     EXPO_PUBLIC_TUJU_STYLE_URL: process.env.EXPO_PUBLIC_TUJU_STYLE_URL,
     EXPO_PUBLIC_TUJU_STYLE_SOURCE_ID: process.env.EXPO_PUBLIC_TUJU_STYLE_SOURCE_ID,
     EXPO_PUBLIC_TUJU_PACK_BASE_URL: process.env.EXPO_PUBLIC_TUJU_PACK_BASE_URL,
+    EXPO_PUBLIC_TUJU_VALHALLA_URL: process.env.EXPO_PUBLIC_TUJU_VALHALLA_URL,
+    EXPO_PUBLIC_TUJU_PHOTON_URL: process.env.EXPO_PUBLIC_TUJU_PHOTON_URL,
+    EXPO_PUBLIC_TUJU_OVERPASS_URL: process.env.EXPO_PUBLIC_TUJU_OVERPASS_URL,
+    EXPO_PUBLIC_TUJU_ALERTS_URL: process.env.EXPO_PUBLIC_TUJU_ALERTS_URL,
     EXPO_PUBLIC_TUJU_PACK_URL_KLANG_VALLEY: process.env.EXPO_PUBLIC_TUJU_PACK_URL_KLANG_VALLEY,
     EXPO_PUBLIC_TUJU_PACK_URL_PAHANG_EAST_COAST: process.env.EXPO_PUBLIC_TUJU_PACK_URL_PAHANG_EAST_COAST,
     EXPO_PUBLIC_TUJU_PACK_URL_SABAH: process.env.EXPO_PUBLIC_TUJU_PACK_URL_SABAH,
@@ -130,6 +175,15 @@ function clean(value: string | undefined): string | undefined {
   return trimmed ? trimmed : undefined;
 }
 
+function stripTrailingSlashes(value: string): string {
+  return value.replace(/\/+$/, '');
+}
+
+/** Accepts "https://host", "https://host/" and "https://host/api" for the Photon setting. */
+function normalizePhotonBase(value: string): string {
+  return stripTrailingSlashes(stripTrailingSlashes(value).replace(/\/api$/i, ''));
+}
+
 /** Pure and throws a ZodError with readable paths when an override is malformed. */
 export function buildConfig(env: TujuEnv = {}): TujuConfig {
   const baseUrl = (clean(env.EXPO_PUBLIC_TUJU_PACK_BASE_URL) ?? DEFAULT_PACK_BASE_URL).replace(/\/+$/, '');
@@ -137,6 +191,10 @@ export function buildConfig(env: TujuEnv = {}): TujuConfig {
   return tujuConfigSchema.parse({
     styleUrl: clean(env.EXPO_PUBLIC_TUJU_STYLE_URL) ?? DEFAULT_STYLE_URL,
     styleSourceId: clean(env.EXPO_PUBLIC_TUJU_STYLE_SOURCE_ID) ?? DEFAULT_STYLE_SOURCE_ID,
+    valhallaBaseUrl: stripTrailingSlashes(clean(env.EXPO_PUBLIC_TUJU_VALHALLA_URL) ?? DEFAULT_VALHALLA_BASE_URL),
+    photonBaseUrl: normalizePhotonBase(clean(env.EXPO_PUBLIC_TUJU_PHOTON_URL) ?? DEFAULT_PHOTON_BASE_URL),
+    overpassUrl: clean(env.EXPO_PUBLIC_TUJU_OVERPASS_URL) ?? DEFAULT_OVERPASS_URL,
+    alertsUrl: clean(env.EXPO_PUBLIC_TUJU_ALERTS_URL) ?? null,
     packs: PACK_SEEDS.map((seed) => ({
       id: seed.id,
       name: seed.name,

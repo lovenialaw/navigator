@@ -11,10 +11,25 @@ describe('tujuConfig', () => {
   it('ships the four regional packs with placeholder URLs by default', () => {
     const config = buildConfig({});
     expect(config.packs.map((p) => p.id)).toEqual(['klang-valley', 'pahang-east-coast', 'sabah', 'sarawak']);
-    expect(config.styleUrl).toBe(DEFAULT_STYLE_URL);
     expect(config.packs[0].url).toBe(`${DEFAULT_PACK_BASE_URL}/klang-valley.pmtiles`);
-    expect(isPlaceholderUrl(config.styleUrl)).toBe(true);
     config.packs.forEach((p) => expect(isPlaceholderUrl(p.url)).toBe(true));
+  });
+
+  it('defaults map style, routing and search to the free public servers', () => {
+    const config = buildConfig({});
+    expect(config.styleUrl).toBe(DEFAULT_STYLE_URL);
+    expect(config.styleUrl).toBe('https://tiles.openfreemap.org/styles/liberty');
+    expect(config.valhallaBaseUrl).toBe('https://valhalla1.openstreetmap.de');
+    expect(config.photonBaseUrl).toBe('https://photon.komoot.io');
+    expect(config.styleSourceId).toBe('openmaptiles');
+    [config.styleUrl, config.valhallaBaseUrl, config.photonBaseUrl].forEach((url) => expect(isPlaceholderUrl(url)).toBe(false));
+  });
+
+  it('accepts a Photon URL with or without a trailing /api', () => {
+    const base = (value: string) => buildConfig({ EXPO_PUBLIC_TUJU_PHOTON_URL: value }).photonBaseUrl;
+    expect(base('https://photon.komoot.io/api')).toBe('https://photon.komoot.io');
+    expect(base('https://photon.komoot.io/api/')).toBe('https://photon.komoot.io');
+    expect(base('https://photon.komoot.io/')).toBe('https://photon.komoot.io');
   });
 
   it('applies style and base-url overrides, trimming trailing slashes', () => {
